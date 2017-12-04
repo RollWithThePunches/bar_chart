@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<!-- D3 V4 -->
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800i" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Dosis:400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+
+	<style>
+		html{
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		body{
+			margin: 0 auto;
+			padding: 0;
+			width: 560px;
+			text-align: center;
+			background: #fff;
+			font-family: 'PT Serif', serif;
+			color: #000;
+			background: transparent;
+		}
+
+		.bar_container{
+			margin-left: -150px;
+			width:800px;
+			height: 375px;
+		}
+
+		.bar_container svg{
+			margin-top: -300px;
+			transform: rotate(90deg);
+		}
+
+		#bar_div {
+			margin-top: 0px;
+			margin-bottom: 150px;
+			width: 800px;
+			height: 450px;
+		}
+
+		.bar { 
+			fill: #0060a9; 
+		}
+
+		#bar_div{
+			margin-top: 0px;
+			margin-bottom: 150px;
+			width: 800px;
+			height: 450px;
+		}
+
+		.bar_buttons{
+			width: 560px;
+			text-align: center;
+		}
+
+		.button{
+			width: 152px;
+			height: 49px;
+			padding: 10px;
+			margin: 20px;
+			font-family: 'Roboto Condensed', sans-serif;
+			border: 1.5px solid #0060a9;
+			border-radius: 5px;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			background: #fff;
+			color: #0060a9;
+		}
+
+		.button:hover{
+			outline:none;
+			background: #0060a9;
+			color: #fff;
+		}
+
+		.button:focus{
+			outline:none;
+			background: #0060a9;
+			color: #fff;
+		}
+
+		.text_note{
+		    font-family:'Roboto Condensed', sans-serif;
+		    font-style: italic;
+		    font-size: 1em;
+		    color: #0060a9;
+		}
+
+		.yAxis{
+			font-family: 'Roboto Condensed', sans-serif;
+			font-size: 1em;
+		}
+
+	</style>
+
+</head>
+
+<body>
+
+	<div class="bar_container"></div>
+	<div class="bar_buttons">
+		<label class="labelButton">
+		<button name="2002" value="2002" class="button" onclick='change(this.value)'>2002</button>
+		</label>
+		<label>
+		<button name="2014" value="2014" class="button" onclick='change(this.value)'>2014</button>
+		</label>
+		<div class="text_note">
+			<span>Press buttons for different periods of time.</span>
+		</div>
+	</div>
+
+</body>
+
+	<script>
+
+		var bothData = [
+	{
+	    "year": "2014",
+	    "product": "Books & DVDs",
+	    "purchase": "0"
+	    },
+	    {
+	    "year": "2002",
+	    "product": "Books & DVDs",
+	    "purchase": "10"
+	    },
+	    {
+	    "year": "2014",
+	    "product": "Beer & Wine",
+	    "purchase": "5.5"
+	    },
+	    {
+	    "year": "2002",
+	    "product": "Beer & Wine",
+	    "purchase": "3"
+	    },
+	    {
+	    "year": "2014",
+	    "product": "Food",
+	    "purchase": "12"
+	    },
+	    {
+	    "year": "2002",
+	    "product": "Food",
+	    "purchase": "12"
+	    },
+	    {
+	    "year": "2014",
+	    "product": "Home Supplies",
+	    "purchase": "7"
+	    },
+	    {
+	    "year": "2002",
+	    "product": "Home Supplies",
+	    "purchase": "6"
+	    }
+	    ];
+
+	    var data2002 = [];
+	    var data2014 = [];
+
+	    for(var i = 0; i < bothData.length; i++){
+	        if(bothData[i]["year"] === "2002"){
+	            data2002.push(bothData[i]);
+	        }else{
+	            data2014.push(bothData[i]);
+	        }
+	    }
+
+	    function change(value){
+	        if(value === '2002'){
+	            update(data2002);
+	        }else if(value === '2014'){
+	            update(data2014);
+	        }
+	    }
+
+	    function update(data){
+	        xChart.domain(data.map(function(d){ return d.product; }) );
+	        yChart.domain( [0, d3.max(data, function(d){ return + d.purchase; })] );
+
+	        var barWidth = width / data.length - 30;
+
+	        var bars = chart.selectAll(".bar")
+	                .data(data, function(d){ return d.product; })
+	            bars.exit()
+	                .remove()
+	             bars.enter()
+	                .append("rect")
+	                .attr("class", "bar")
+	                .attr("x", function(d, i){return i * barWidth + 1 })
+	                .attr("y",function(d){ return yChart(d.purchase); })
+	                .attr("height",function(d){ return height - yChart(d.purchase); })
+	                .attr("width", barWidth - 5)
+	                .attr('fill', function(d){ 
+	                  if(d.year === "2014"){
+	                    return'#ea5454'
+	                  }else{
+	                    return '#0060a9'
+	                  }
+	                })
+	                
+
+	        bars.transition()
+	          .duration(600)
+	          .ease(d3.easeLinear)
+	          .attr('y', function(d){ return yChart(d.purchase); })
+	          .attr('height', function(d){ return height - yChart(d.purchase); })
+	          .style('fill', function(d){
+	            if(d.year === "2014"){
+	              return '#ea5454'
+	            } else {
+	              return '#0060a9'
+	            }
+	          })
+	        chart.select('.y').call(yAxis);
+
+
+	        chart.select('.xAxis')
+	            .attr("transform", "translate(0," + height + ")")
+	            .call(xAxis)
+	            .selectAll("text")
+	                .style("text-anchor", "end")
+	                .attr("dx", "-1.5em")
+	                .attr("dy", "-.55em")
+	                .attr("transform", function(d){
+	                    return "rotate(270)";
+	                });
+
+	         }
+
+	    var margin = {top: 100, right: 20, bottom: 95, left: 0};
+	    var width = 400;
+	    var height = 700;
+
+	    var prodCanvas = d3.select('.bar_container')
+	            .append('svg')
+	            .attr('width',300)
+	            .attr('height',1024)
+	            //transform below is used to roatate canvas
+	            .attr('transform','translate(0,0)');
+
+	    var chart = prodCanvas.append("g")
+	            .attr("width", width + margin.left + margin.right)
+	            .attr("height", height + margin.top + margin.bottom)
+	            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	    var xChart = d3.scaleBand()
+	                .range([0, width - 120]);
+
+	    var yChart = d3.scaleLinear()
+	                .range([height, 0]);
+
+	    var xAxis = d3.axisBottom(xChart);
+	    var yAxis = d3.axisLeft(yChart);
+
+
+	   chart.append("g")
+	        .attr("class", "xAxis")
+	        .attr("transform", "translate(0," + height + ")")
+	        .call(xAxis)
+	        .selectAll("text")
+	        .style("text-anchor", "end")
+	        .attr("dx", "-.8em")
+	        .attr("dy", ".15em")
+	        .attr("transform", function(d){
+	            return "rotate(-65)";
+	         });
+
+	    update(data2002);
+
+	</script>
+
+</html>
